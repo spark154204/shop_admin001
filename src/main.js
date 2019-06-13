@@ -3,6 +3,8 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+// 导入全局样式
+import '@/assets/index.css'
 // 导入element
 import ElementUI from 'element-ui'
 // 样式

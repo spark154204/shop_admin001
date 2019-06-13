@@ -1,115 +1,92 @@
 <template>
-  <el-form
-    :model="ruleForm"
-    :rules="rules"
-    ref="ruleForm"
-    label-width="100px"
-    class="demo-ruleForm"
-  >
-    <el-form-item
-      label="活动名称"
-      prop="name"
-    >
-      <el-input v-model="ruleForm.name"></el-input>
-    </el-form-item>
-    <el-form-item
-      label="活动区域"
-      prop="region"
-    >
-      <el-select
-        v-model="ruleForm.region"
-        placeholder="请选择活动区域"
-      >
-        <el-option
-          label="区域一"
-          value="shanghai"
-        ></el-option>
-        <el-option
-          label="区域二"
-          value="beijing"
-        ></el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item>
-      <el-button
-        type="primary"
-        @click="submitForm('ruleForm')"
-      >立即创建</el-button>
-      <el-button @click="resetForm('ruleForm')">重置</el-button>
-    </el-form-item>
-  </el-form>
-</template>
+<div class="login-wrapper">
+  <el-row type="flex" class="loginForm" justify="center" align="middle">
+  <el-col :xs="12" :sm='8' :md="8" :lg="6" :xl="1" class="login-content">
+  <el-form label-position="top" :model="loginForm" :rules="rules" ref="loginForm" label-width="100px" >
+  <el-form-item label="用户名" prop="username">
+    <el-input v-model="loginForm.username"></el-input>
+  </el-form-item>
+  <el-form-item label="密码" prop="password">
+    <el-input type="password" v-model="loginForm.password"></el-input>
+  </el-form-item>
+  <el-form-item>
+    <el-button type="primary" @click="submitForm()">登录</el-button>
+    <el-button @click="resetForm()">重置</el-button>
+  </el-form-item>
+</el-form>
+</el-col>
+</el-row>
+</div>
 
+</template>
 <script>
+import axios from 'axios'
 export default {
   data() {
-    return {
-      ruleForm: {
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: ""
-      },
-      rules: {
-        name: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
-        ],
-        region: [
-          { required: true, message: "请选择活动区域", trigger: "change" }
-        ],
-        date1: [
-          {
-            type: "date",
-            required: true,
-            message: "请选择日期",
-            trigger: "change"
-          }
-        ],
-        date2: [
-          {
-            type: "date",
-            required: true,
-            message: "请选择时间",
-            trigger: "change"
-          }
-        ],
-        type: [
-          {
-            type: "array",
-            required: true,
-            message: "请至少选择一个活动性质",
-            trigger: "change"
-          }
-        ],
-        resource: [
-          { required: true, message: "请选择活动资源", trigger: "change" }
-        ],
-        desc: [{ required: true, message: "请填写活动形式", trigger: "blur" }]
-      }
-    };
-  },
-  methods: {
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          alert("submit!");
-        } else {
-          console.log("error submit!!");
-          return false;
+      return {
+        loginForm: {
+          username: '',
+          password:''
+        },
+        rules: {
+          username: [
+            { required: true, message: '用户名不能为空', trigger: 'blur' },
+            { min: 3, max: 6, message: '长度在 3 到 6 个字符', trigger: 'blur' }
+          ],
+          password: [
+            { required: true, message: '密码不能为空', trigger: 'blur' },
+            { min: 3, max: 6, message: '长度在 3 到 6 个字符', trigger: 'blur' }
+          ],
         }
-      });
+      };
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
+    methods: {
+      // 登录功能实现
+      login(){
+        // http://localhost:8888/api/private/v1/login
+        axios.post('http://localhost:8888/api/private/v1/login',this.loginForm)
+        .then(res=>{
+          console.log(res);
+        const {data,meta}=res.data
+        if(meta.status==200){
+          console.log('登录成功');
+          this.$router.push('/home')
+        }else{
+          console.log('登录失败',meta.msg)
+          this.$message.error(meta.msg)
+        }
+        })
+      },
+      submitForm() {
+        this.$refs.loginForm.validate((valid) => {
+          if (valid) {
+        console.log(this.loginForm);
+        this.login();
+
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      resetForm() {
+     this.$refs.loginForm.resetFields();
+      }
     }
-  }
-};
+}
 </script>
 
 <style>
+.login-wrapper,.loginForm{
+  height: 100%;
+}
+.loginForm{
+  background-color: #2D434C;
+}
+.login-content{
+  background: #fff;
+  min-width: 240px;
+  padding: 20px 35px;
+  border-radius: 10px;
+}
 </style>
